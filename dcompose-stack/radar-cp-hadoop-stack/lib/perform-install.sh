@@ -97,7 +97,12 @@ fi
 
 # Initializing Kafka
 echo "==> Setting up topics"
-sudo-linux bin/radar-docker up -d zookeeper-1 zookeeper-2 zookeeper-3 kafka-1 kafka-2 kafka-3 schema-registry-1
+if [[ "${LITE_STACK}" = "true" ]]; then
+  sudo-linux bin/radar-docker up -d zookeeper-1 kafka-1 schema-registry-1
+else
+  sudo-linux bin/radar-docker up -d zookeeper-1 zookeeper-2 zookeeper-3 kafka-1
+kafka-2 kafka-3 schema-registry-1
+fi
 sudo-linux bin/radar-docker run --rm kafka-init
 KAFKA_SCHEMA_RETENTION_MS=${KAFKA_SCHEMA_RETENTION_MS:-5400000000}
 KAFKA_SCHEMA_RETENTION_CMD='kafka-configs --zookeeper "${KAFKA_ZOOKEEPER_CONNECT}" --entity-type topics --entity-name _schemas --alter --add-config min.compaction.lag.ms='${KAFKA_SCHEMA_RETENTION_MS}',cleanup.policy=compact'

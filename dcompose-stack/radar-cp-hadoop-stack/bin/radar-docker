@@ -5,6 +5,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if [[ "${ENABLE_OPTIONAL_SERVICES}" = "true" ]]; then
   stack="${DOCKER_COMPOSE:-docker-compose} -f docker-compose.yml -f optional-services.yml"
+elif [[ "${LITE_STACK}" = "true" ]]; then
+  stack="${DOCKER_COMPOSE:-docker-compose} -f docker-compose-lite.yml"
 else
   stack=${DOCKER_COMPOSE:-docker-compose}
 fi
