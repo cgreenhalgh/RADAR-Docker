@@ -1,15 +1,18 @@
 # uncomment and add according to which optional services need to use the webserver.
 location /redcapint/ {
-  proxy_pass         http://radar-integration:8080/redcap/;
+  set $radarintegration http://radar-integration:8080/redcap/;
+  proxy_pass         $radarintegration;
   proxy_set_header   Host $host;
 }
 
 location /rest-sources/authorizer/ {
-  proxy_pass         http://radar-rest-sources-authorizer:80/;
+  set $radarrestsources http://radar-rest-sources-authorizer:80/;
+  proxy_pass         $radarrestsources;
   proxy_set_header   Host $host;
 }
 
 location /rest-sources/backend/ {
-  proxy_pass         http://radar-rest-sources-backend:8080/;
+  set $radarrestsourcesbackend http://radar-rest-sources-backend:8080/;
+  proxy_pass         $radarrestsourcesbackend;
   proxy_set_header   Host $host;
 }
