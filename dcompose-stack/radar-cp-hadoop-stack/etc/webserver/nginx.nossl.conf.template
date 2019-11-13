@@ -36,8 +36,8 @@ http {
 
     location /kafka/ {
       include cors.conf;
-      set $gateway       http://gateway/radar-gateway/;
-      rewrite ^/kafka(.*)$ $1 break;
+      set $gateway       http://gateway;
+      rewrite ^/kafka(.*)$ /radar-gateway$1 break;
       proxy_pass         $gateway;
       proxy_set_header   Host $host;
       proxy_http_version 1.1;
@@ -56,7 +56,7 @@ http {
       limit_except GET {
         deny all;
       }
-      set $schemaregistry http://schema-registry-1:8081/;
+      set $schemaregistry http://schema-registry-1:8081;
       rewrite ^/schema(.*)$ $1 break;
       proxy_pass         $schemaregistry;
       proxy_set_header   Host $host;
@@ -64,7 +64,7 @@ http {
       proxy_set_header   Connection "";
     }
     location /dashboard/ {
-      set $dashboard     http://dashboard:80/;
+      set $dashboard     http://dashboard:80;
       rewrite ^/dashboard(.*)$ $1 break;
       proxy_pass         $dashboard;
       proxy_set_header   Host $host;
@@ -72,7 +72,7 @@ http {
     location /portainer/ {
       include ip-access-control.conf;
 
-      set $portainer     http://portainer:9000/;
+      set $portainer     http://portainer:9000;
       rewrite ^/portainer(.*)$ $1 break;
       proxy_pass         $portainer;
       proxy_http_version 1.1;
@@ -89,12 +89,14 @@ http {
     location /api/ {
       include cors.conf;
       set $restapi       http://rest-api:8080;
+      # NB keep /api/
       proxy_pass         $restapi;
       proxy_set_header   Host $host;
     }
     location /managementportal/ {
       include cors.conf;
       set $managementportal http://managementportal-app:8080;
+      # keep /managementportal
       proxy_pass         $managementportal;
       proxy_set_header   Host $host;
     }
@@ -102,12 +104,14 @@ http {
       # Allow 20 fast-following requests, like when authorizing a user.
       limit_req zone=login_limit burst=20;
       include cors.conf;
+      # keep /managementportal/...
       proxy_pass         ${managementportal};
       proxy_set_header   Host $host;
     }
     location /managementportal/api/meta-token/ {
       limit_req zone=login_limit;
       include cors.conf;
+      # keep /managementportal/...
       proxy_pass         ${managementportal};
       proxy_set_header   Host $host;
     }
@@ -117,6 +121,7 @@ http {
       auth_basic_user_file kafka-manager.htpasswd;
 
       set $kafkamanager  http://kafka-manager:9000;
+      # keep /kafkamanager
       proxy_pass         $kafkamanager;
       proxy_set_header   Host $host;
     }
