@@ -51,7 +51,7 @@ http {
 
     ssl_stapling              on;
     ssl_stapling_verify       on;
-    resolver                  8.8.8.8 8.8.4.4;
+    #resolver                  8.8.8.8 8.8.4.4;
 
     ssl_certificate           /etc/letsencrypt/live/localhost/fullchain.pem;
     ssl_certificate_key       /etc/letsencrypt/live/localhost/privkey.pem;
