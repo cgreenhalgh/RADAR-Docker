@@ -60,9 +60,14 @@ http {
     access_log                /var/log/nginx/access.log;
     error_log                 /var/log/nginx/error.log;
 
+    # this is the internal Docker DNS, cache only for 30s
+    resolver 127.0.0.11 valid=30s;
+
     location /kafka/ {
       include cors.conf;
-      proxy_pass         http://gateway/radar-gateway/;
+      set $gateway       http://gateway/radar-gateway/;
+      rewrite ^/kafka(.*)$ $1 break;
+      proxy_pass         $gateway;
       proxy_set_header   Host $host;
       proxy_http_version 1.1;
       proxy_set_header   Connection "";
@@ -80,13 +85,16 @@ http {
       limit_except GET {
         deny all;
       }
-      proxy_pass         http://schema-registry-1:8081/;
+      set $schemaregistry http://schema-registry-1:8081/;
+      rewrite ^/schema(.*)$ $1 break;
+      proxy_pass         $schemaregistry;
       proxy_set_header   Host $host;
       proxy_http_version 1.1;
       proxy_set_header   Connection "";
     }
     location /dashboard/ {
       set $dashboard     http://dashboard:80/;
+      rewrite ^/dashboard(.*)$ $1 break;
       proxy_pass         $dashboard;
       proxy_set_header   Host $host;
     }
@@ -94,38 +102,42 @@ http {
       include ip-access-control.conf;
 
       set $portainer     http://portainer:9000/;
+      rewrite ^/portainer(.*)$ $1 break;
       proxy_pass         $portainer;
       proxy_http_version 1.1;
       proxy_set_header   Connection "";
     }
     location /portainer/api/websocket/ {
       include ip-access-control.conf;
-      proxy_pass         ${portainer}api/websocket/;
+      rewrite ^/portainer(.*)$ $1 break;
+      proxy_pass         $portainer;
       proxy_set_header   Upgrade $http_upgrade;
       proxy_set_header   Connection "upgrade";
       proxy_http_version 1.1;
     }
     location /api/ {
       include cors.conf;
-      proxy_pass         http://rest-api:8080/api/;
+      set $restapi       http://rest-api:8080;
+      proxy_pass         $restapi;
       proxy_set_header   Host $host;
     }
     location /managementportal/ {
       include cors.conf;
-      proxy_pass         http://managementportal-app:8080/managementportal/;
+      set $managementportal http://managementportal-app:8080;
+      proxy_pass         $managementportal;
       proxy_set_header   Host $host;
     }
     location /managementportal/oauth/ {
       # Allow 20 fast-following requests, like when authorizing a user.
       limit_req zone=login_limit burst=20;
       include cors.conf;
-      proxy_pass         http://managementportal-app:8080/managementportal/oauth/;
+      proxy_pass         ${managementportal};
       proxy_set_header   Host $host;
     }
     location /managementportal/api/meta-token/ {
       limit_req zone=login_limit;
       include cors.conf;
-      proxy_pass         http://managementportal-app:8080/managementportal/api/meta-token/;
+      proxy_pass         ${managementportal};
       proxy_set_header   Host $host;
     }
     location /kafkamanager/{
