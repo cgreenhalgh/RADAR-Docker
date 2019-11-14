@@ -34,9 +34,9 @@ http {
     # this is the internal Docker DNS, cache only for 30s
     resolver 127.0.0.11 valid=30s;
 
+    set $gateway       http://gateway;
     location /kafka/ {
       include cors.conf;
-      set $gateway       http://gateway;
       rewrite ^/kafka(.*)$ /radar-gateway$1 break;
       proxy_pass         $gateway;
       proxy_set_header   Host $host;
@@ -69,10 +69,10 @@ http {
       proxy_pass         $dashboard;
       proxy_set_header   Host $host;
     }
+    set $portainer     http://portainer:9000;
     location /portainer/ {
       include ip-access-control.conf;
 
-      set $portainer     http://portainer:9000;
       rewrite ^/portainer(.*)$ $1 break;
       proxy_pass         $portainer;
       proxy_http_version 1.1;
@@ -93,9 +93,9 @@ http {
       proxy_pass         $restapi;
       proxy_set_header   Host $host;
     }
+    set $managementportal http://managementportal-app:8080;
     location /managementportal/ {
       include cors.conf;
-      set $managementportal http://managementportal-app:8080;
       # keep /managementportal
       proxy_pass         $managementportal;
       proxy_set_header   Host $host;
@@ -105,14 +105,14 @@ http {
       limit_req zone=login_limit burst=20;
       include cors.conf;
       # keep /managementportal/...
-      proxy_pass         ${managementportal};
+      proxy_pass         $managementportal;
       proxy_set_header   Host $host;
     }
     location /managementportal/api/meta-token/ {
       limit_req zone=login_limit;
       include cors.conf;
       # keep /managementportal/...
-      proxy_pass         ${managementportal};
+      proxy_pass         $managementportal;
       proxy_set_header   Host $host;
     }
     location /kafkamanager/{

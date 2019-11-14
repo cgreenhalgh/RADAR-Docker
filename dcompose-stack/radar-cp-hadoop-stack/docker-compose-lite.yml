@@ -369,7 +369,7 @@ services:
       - hdfs-datanode-1
       - hdfs-namenode-1
     environment:
-      CONNECT_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-1:9092,PLAINTEXT://kafka-2:9092,PLAINTEXT://kafka-3:9092
+      CONNECT_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-1:9092
       CONNECT_REST_PORT: 8083
       CONNECT_GROUP_ID: "default"
       CONNECT_CONFIG_STORAGE_TOPIC: "default.config"
