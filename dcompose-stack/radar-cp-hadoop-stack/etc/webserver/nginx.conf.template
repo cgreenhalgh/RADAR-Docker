@@ -82,6 +82,7 @@ http {
       deny all;
     }
     location /schema/ {
+      include cors.conf;
       limit_except GET {
         deny all;
       }
