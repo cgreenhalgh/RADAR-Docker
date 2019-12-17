@@ -312,7 +312,7 @@ services:
     restart: on-failure
     volumes:
       - ./etc/csvfile-connector/sink-csvfile.properties:/etc/kafka-connect/sink.properties
-      - ./output:/output
+      - ./output:/var/csvout
     networks:
       - zookeeper
       - kafka
